@@ -7,6 +7,11 @@
 }
 
 .container {
+  margin: 40px auto;
+  text-align: center;
+}
+
+.drawScreen {
   width: 960px;
   height: 960px;
   margin: 40px auto;
@@ -18,9 +23,4 @@
 
 .square {
   border: 1px solid black;
-  flex: 0 0 auto;
-}
-
-.square:hover {
-  background-color: lightgrey;
 }

@@ -1,19 +1,32 @@
-const container = document.querySelector("#container");
+const drawScreen = document.querySelector("#drawScreen");
+const resizeButton = document.querySelector("#resizeButton");
 
-let containerEdgeLength = container.clientWidth;
-let numberOfSquares = 16;
-let squareSideLength = containerEdgeLength / numberOfSquares;
+resizeButton.addEventListener("click", () => {
+  user_input = prompt("How many squares per side?");
+  clearScreen();
+  redrawScreen(user_input);
+});
 
-for (let i = 0; i < numberOfSquares * numberOfSquares; i++) {
-  const flexBasis = 100 / numberOfSquares;
+const clearScreen = () => {
+  drawScreen.replaceChildren();
+};
 
-  const newSquare = document.createElement("div");
-  newSquare.className = "square";
-  newSquare.style.flex = `0 0 ${flexBasis}%`;
+const redrawScreen = (squaresPerSide) => {
+  const totalSquares = squaresPerSide * squaresPerSide;
 
-  newSquare.addEventListener("mouseenter", (event) => {
-    event.target.style.backgroundColor = "#7f7f7f";
-  });
+  for (let i = 0; i < totalSquares; i++) {
+    const flexBasis = 100 / squaresPerSide;
 
-  container.appendChild(newSquare);
-}
+    const newSquare = document.createElement("div");
+    newSquare.className = "square";
+    newSquare.style.flex = `0 0 ${flexBasis}%`;
+
+    newSquare.addEventListener("mouseenter", (event) => {
+      event.target.style.backgroundColor = "#7f7f7f";
+    });
+
+    drawScreen.appendChild(newSquare);
+  }
+};
+
+redrawScreen(16);
