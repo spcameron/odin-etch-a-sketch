@@ -12,6 +12,10 @@ const clearScreen = () => {
 };
 
 const redrawScreen = (squaresPerSide) => {
+  if (squaresPerSide > 64) {
+    squaresPerSide = 64;
+  }
+  
   const totalSquares = squaresPerSide * squaresPerSide;
 
   for (let i = 0; i < totalSquares; i++) {
