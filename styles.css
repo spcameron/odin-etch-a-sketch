@@ -21,6 +21,10 @@
   flex-wrap: wrap;
 }
 
-.square {
+.pixel {
   border: 1px solid black;
+}
+
+.painted {
+  background-color: #7f7f7f;
 }
