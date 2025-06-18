@@ -7,7 +7,7 @@ document.addEventListener("mousedown", () => (isMouseDown = true));
 document.addEventListener("mouseup", () => (isMouseDown = false));
 
 resizeButton.addEventListener("click", () => {
-  user_input = prompt("How many squares per side?");
+  user_input = prompt("How many squares per side (2 - 64)?");
   clearScreen();
   redrawScreen(user_input);
 });
@@ -19,6 +19,8 @@ const clearScreen = () => {
 const redrawScreen = (squaresPerSide) => {
   if (squaresPerSide > 64) {
     squaresPerSide = 64;
+  } else if (squaresPerSide == null || squaresPerSide < 2) {
+    squaresPerSide = 16;
   }
 
   const totalSquares = squaresPerSide * squaresPerSide;

@@ -11,6 +11,18 @@
   text-align: center;
 }
 
+.buttons {
+  margin: 20px 10px;
+  border: 1px solid blue;
+
+  display: flex;
+  justify-content: center;
+}
+
+.button {
+  padding: 10px;
+}
+
 .drawScreen {
   width: 960px;
   height: 960px;
