@@ -9,7 +9,7 @@ const ToolMode = Object.freeze({
 // STATE
 let isMouseDown = false;
 let currentTool = ToolMode.DRAW;
-let currentColor = "#7f7f7f";
+let currentColor = hsl(0, 0, 50);
 
 // DOM ELEMENT REFERENCES
 const drawScreen = document.querySelector("#drawScreen");
@@ -80,6 +80,53 @@ const setToolMode = (mode) => {
       console.error("Invalid tool mode:", mode);
   }
 };
+
+const convertRgbToHsl = (r, g, b) => {
+  // normalize RGB values
+  const rFloat = r / 255;
+  const gFloat = g / 255;
+  const bFloat = b / 255;
+
+  // find min, max, and calculate delta
+  const max = Math.max(rFloat, gFloat, bFloat);
+  const min = Math.min(rFloat, gFloat, bFloat);
+  const delta = max - min;
+
+  // compute lightness (L)
+  let lightness = (max + min) / 2;
+
+  // compute saturation (S)
+  let saturation;
+  if (delta == 0) {
+    saturation = 0;
+  } else {
+    saturation = delta / (1 - Math.abs(2 * lightness - 1));
+  }
+
+  // computer hue (H)
+  let hue;
+  if (delta === 0) {
+    hue = 0;
+  } else if (max === rFloat) {
+    hue = (gFloat - bFloat) / delta;
+  } else if (max === gFloat) {
+    hue = (bFloat - rFloat) / delta + 2;
+  } else if (max === bFloat) {
+    hue = (rFloat - gFloat) / delta + 4;
+  }
+
+  // scale L and S to percentage, H to degrees
+  const l = lightness * 100;
+  const s = saturation * 100;
+  const h = hue * 60;
+  if (h < 0) h += 360;
+
+  return [h, s, l];
+};
+
+const convertHslToRgb = (h, s, l) => {};
+
+const parseColorString = (string) => {};
 
 // EVENT BINDINGS
 document.addEventListener("mousedown", () => (isMouseDown = true));
