@@ -9,6 +9,7 @@ const ToolMode = Object.freeze({
 // STATE
 let isMouseDown = false;
 let currentTool = ToolMode.DRAW;
+let currentColor = "#7f7f7f";
 
 // DOM ELEMENT REFERENCES
 const drawScreen = document.querySelector("#drawScreen");
@@ -18,8 +19,8 @@ const eraseButton = document.querySelector("#eraseButton");
 
 // TOOL HANDLERS
 const ToolHandlers = {
-  [ToolMode.DRAW]: (pixel) => pixel.classList.add("painted"),
-  [ToolMode.ERASE]: (pixel) => pixel.classList.remove("painted"),
+  [ToolMode.DRAW]: (pixel) => (pixel.style.backgroundColor = currentColor),
+  [ToolMode.ERASE]: (pixel) => (pixel.style.backgroundColor = ""),
   // [ToolMode.SHADE]: () => {/* increment darkness by 10% */},
   // [ToolMode.LIGHTEN]: () => {/* decrement darkness by 10% */},
 };
@@ -31,10 +32,14 @@ const applyTool = (pixel) => {
 
 // UTILITIES
 const clearScreen = () => {
-  drawScreen.replaceChildren();
+  document.querySelectorAll(".pixel").forEach((pixel) => {
+    pixel.style.backgroundColor = "";
+  });
 };
 
 const redrawScreen = (squaresPerSide) => {
+  drawScreen.replaceChildren();
+
   if (squaresPerSide > 64) {
     squaresPerSide = 64;
   } else if (squaresPerSide == null || squaresPerSide < 2) {
