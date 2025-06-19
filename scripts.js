@@ -9,20 +9,22 @@ const ToolMode = Object.freeze({
 // STATE
 let isMouseDown = false;
 let currentTool = ToolMode.DRAW;
-let currentColor = hsl(0, 0, 50);
+let currentColor = "rgb(127, 127, 127)";
 
 // DOM ELEMENT REFERENCES
 const drawScreen = document.querySelector("#drawScreen");
 const resizeButton = document.querySelector("#resizeButton");
 const drawButton = document.querySelector("#drawButton");
 const eraseButton = document.querySelector("#eraseButton");
+const shadeButton = document.querySelector("#shadeButton");
+const lightenButton = document.querySelector("#lightenButton");
 
 // TOOL HANDLERS
 const ToolHandlers = {
   [ToolMode.DRAW]: (pixel) => (pixel.style.backgroundColor = currentColor),
-  [ToolMode.ERASE]: (pixel) => (pixel.style.backgroundColor = ""),
-  // [ToolMode.SHADE]: () => {/* increment darkness by 10% */},
-  // [ToolMode.LIGHTEN]: () => {/* decrement darkness by 10% */},
+  [ToolMode.ERASE]: (pixel) => (pixel.style.backgroundColor = "rgb(255, 255, 255)"),
+  [ToolMode.SHADE]: (pixel) => (shadePixel(pixel, -10)),
+  [ToolMode.LIGHTEN]: (pixel) => (shadePixel(pixel, 10)),
 };
 
 const applyTool = (pixel) => {
@@ -65,6 +67,8 @@ const redrawScreen = (squaresPerSide) => {
     pixel.addEventListener("mousedown", () => {
       applyTool(pixel);
     });
+
+    pixel.style.backgroundColor = "rgb(255, 255, 255)";
   });
 };
 
@@ -81,7 +85,7 @@ const setToolMode = (mode) => {
   }
 };
 
-const convertRgbToHsl = (r, g, b) => {
+const convertRgbToHsl = ({ r, g, b }) => {
   // normalize RGB values
   const rFloat = r / 255;
   const gFloat = g / 255;
@@ -118,14 +122,13 @@ const convertRgbToHsl = (r, g, b) => {
   // scale L and S to percentage, H to degrees
   hue *= 60;
   if (hue < 0) hue += 360;
-  lightness *= 100;
   saturation *= 100;
+  lightness *= 100;
 
-  const hsl = [hue, saturation, lightness];
-  return hsl;
+  return { h: hue, s: saturation, l: lightness};
 };
 
-const convertHslToRgb = (h, s, l) => {
+const convertHslToRgb = ({ h, s, l }) => {
   // normalize HSL values
   h = h % 360;
   const hFloat = h / 60;
@@ -162,7 +165,7 @@ const convertHslToRgb = (h, s, l) => {
     let val = rgb[key] + M;
     val *= 255;
     val = Math.round(val);
-    val = Math.max(0, Math.min(255, val));
+    val = clamp(val, 0, 255);
     rgb[key] = val;
   }
 
@@ -170,10 +173,6 @@ const convertHslToRgb = (h, s, l) => {
 };
 
 const parseColorString = (string) => {
-  if (string === "" || string === null || string === "transparent") {
-    return { r: 255, g: 255, b: 255 };
-  }
-
   const start = string.indexOf("(");
   const end = string.indexOf(")");
   const values = string.slice(start + 1, end);
@@ -187,6 +186,20 @@ const formatColorString = (rgbObject) => {
   return `rgb(${rgbObject.r}, ${rgbObject.g}, ${rgbObject.b})`;
 };
 
+const shadePixel = (pixel, delta) => {
+  const currRgbString = getComputedStyle(pixel).backgroundColor;
+  const currRgb = parseColorString(currRgbString);
+  const currHsl = convertRgbToHsl(currRgb);
+  const newHsl = { h: currHsl.h, s: currHsl.s, l: clamp(currHsl.l + delta, 0, 100) };
+  const newRgb = convertHslToRgb(newHsl);
+  const newRgbString = formatColorString(newRgb);
+  pixel.style.backgroundColor = newRgbString;
+}
+
+const clamp = (value, min, max) => {
+  return Math.max(min, Math.min(max, value));
+}
+
 // EVENT BINDINGS
 document.addEventListener("mousedown", () => (isMouseDown = true));
 document.addEventListener("mouseup", () => (isMouseDown = false));
@@ -199,6 +212,8 @@ resizeButton.addEventListener("click", () => {
 
 drawButton.addEventListener("click", () => setToolMode(ToolMode.DRAW));
 eraseButton.addEventListener("click", () => setToolMode(ToolMode.ERASE));
+shadeButton.addEventListener("click", () => setToolMode(ToolMode.SHADE));
+lightenButton.addEventListener("click", () => setToolMode(ToolMode.LIGHTEN));
 
 // INITIALIZATION
 redrawScreen(16);
