@@ -116,17 +116,76 @@ const convertRgbToHsl = (r, g, b) => {
   }
 
   // scale L and S to percentage, H to degrees
-  const l = lightness * 100;
-  const s = saturation * 100;
-  const h = hue * 60;
-  if (h < 0) h += 360;
+  hue *= 60;
+  if (hue < 0) hue += 360;
+  lightness *= 100;
+  saturation *= 100;
 
-  return [h, s, l];
+  const hsl = [hue, saturation, lightness];
+  return hsl;
 };
 
-const convertHslToRgb = (h, s, l) => {};
+const convertHslToRgb = (h, s, l) => {
+  // normalize HSL values
+  h = h % 360;
+  const hFloat = h / 60;
+  const sFloat = s / 100;
+  const lFloat = l / 100;
 
-const parseColorString = (string) => {};
+  // compute chroma (C)
+  const C = (1 - Math.abs(2 * lFloat - 1)) * sFloat;
+
+  // computer intermediate value X
+  const X = C * (1 - Math.abs((hFloat % 2) - 1));
+
+  // compute intermediate RGB values
+  let rgb;
+  if (hFloat < 1) {
+    rgb = { r: C, g: X, b: 0 };
+  } else if (hFloat < 2) {
+    rgb = { r: X, g: C, b: 0 };
+  } else if (hFloat < 3) {
+    rgb = { r: 0, g: C, b: X };
+  } else if (hFloat < 4) {
+    rgb = { r: 0, g: X, b: C };
+  } else if (hFloat < 5) {
+    rgb = { r: X, g: 0, b: C };
+  } else {
+    rgb = { r: C, g: 0, b: X };
+  }
+
+  // compute lightness offset (M)
+  const M = lFloat - C / 2;
+
+  // apply M to each RGB, scale and clamp to [0, 255]
+  for (const key of ["r", "g", "b"]) {
+    let val = rgb[key] + M;
+    val *= 255;
+    val = Math.round(val);
+    val = Math.max(0, Math.min(255, val));
+    rgb[key] = val;
+  }
+
+  return rgb;
+};
+
+const parseColorString = (string) => {
+  if (string === "" || string === null || string === "transparent") {
+    return { r: 255, g: 255, b: 255 };
+  }
+
+  const start = string.indexOf("(");
+  const end = string.indexOf(")");
+  const values = string.slice(start + 1, end);
+
+  let tokens = values.split(",");
+  const [r, g, b] = tokens.slice(0, 3).map((str) => parseInt(str.trim()));
+  return { r, g, b };
+};
+
+const formatColorString = (rgbObject) => {
+  return `rgb(${rgbObject.r}, ${rgbObject.g}, ${rgbObject.b})`;
+};
 
 // EVENT BINDINGS
 document.addEventListener("mousedown", () => (isMouseDown = true));
