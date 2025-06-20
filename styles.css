@@ -1,3 +1,12 @@
+:root {
+  --primary-red: #7d0a0a;
+  --secondary-red: #bf3131;
+  --primary-grey: #7f7f7f;
+  --secondary-grey: #f2f2f2;
+  --gold: #ead196;
+  --silver: #eeeeee;
+}
+
 *,
 *::before,
 *::after {
@@ -6,38 +15,85 @@
   box-sizing: border-box;
 }
 
-.container {
-  margin: 40px auto;
-  text-align: center;
+/* header */
+
+/* body */
+
+.body {
+  font-family: "Audiowide", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
-.buttons {
-  margin: 20px 10px;
-  border: 1px solid blue;
+.main {
+  padding: 40px;
+  overflow-x: auto;
+  min-width: 100vw;
+}
+
+.container-wrapper {
+  display: flex;
+  justify-content: center;
+  width: max-content;
+  min-width: 100%;
+}
+
+.container {
+  padding: 20px;
+  width: fit-content;
+  min-width: fit-content;
+
+  background-color: var(--primary-red);
+  border-radius: 50px;
+  box-shadow: 10px 5px 5px var(--secondary-grey);
 
   display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.buttons-container {
+  margin: 20px 10px;
+  flex: 0 0 auto;
+
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   gap: 20px;
 }
 
 .button {
+  font-family: "Audiowide", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1.5em;
+
   padding: 10px;
+  border: none;
+  border-radius: 10px;
+
+  background-color: var(--silver);
+}
+
+.tool-button.active {
+  background-color: var(--gold);
 }
 
 .drawScreen {
-  width: 960px;
-  height: 960px;
-  margin: 40px auto;
-  border: 1px solid red;
+  width: 640px;
+  height: 640px;
+  margin: 40px;
+  border: 2px solid #000000;
+  flex: 0 0 auto;
 
   display: flex;
   flex-wrap: wrap;
 }
 
 .pixel {
-  border: 1px solid black;
+  background-color: rgb(255, 255, 255);
 }
 
-.painted {
-  background-color: #7f7f7f;
+.show-grid {
+  border: 1px solid black;
 }

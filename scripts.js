@@ -10,6 +10,7 @@ const ToolMode = Object.freeze({
 let isMouseDown = false;
 let currentTool = ToolMode.DRAW;
 let currentColor = "rgb(127, 127, 127)";
+let displayGrid = false;
 
 // DOM ELEMENT REFERENCES
 const drawScreen = document.querySelector("#drawScreen");
@@ -18,13 +19,15 @@ const drawButton = document.querySelector("#drawButton");
 const eraseButton = document.querySelector("#eraseButton");
 const shadeButton = document.querySelector("#shadeButton");
 const lightenButton = document.querySelector("#lightenButton");
+const gridButton = document.querySelector("#toggleGrid");
 
 // TOOL HANDLERS
 const ToolHandlers = {
   [ToolMode.DRAW]: (pixel) => (pixel.style.backgroundColor = currentColor),
-  [ToolMode.ERASE]: (pixel) => (pixel.style.backgroundColor = "rgb(255, 255, 255)"),
-  [ToolMode.SHADE]: (pixel) => (shadePixel(pixel, -10)),
-  [ToolMode.LIGHTEN]: (pixel) => (shadePixel(pixel, 10)),
+  [ToolMode.ERASE]: (pixel) =>
+    (pixel.style.backgroundColor = "rgb(255, 255, 255)"),
+  [ToolMode.SHADE]: (pixel) => shadePixel(pixel, -10),
+  [ToolMode.LIGHTEN]: (pixel) => shadePixel(pixel, 10),
 };
 
 const applyTool = (pixel) => {
@@ -32,7 +35,7 @@ const applyTool = (pixel) => {
   if (handler) handler(pixel);
 };
 
-// UTILITIES
+// DOM UTILITIES
 const clearScreen = () => {
   document.querySelectorAll(".pixel").forEach((pixel) => {
     pixel.style.backgroundColor = "";
@@ -53,9 +56,9 @@ const redrawScreen = (squaresPerSide) => {
 
   for (let i = 0; i < totalSquares; i++) {
     const newSquare = document.createElement("div");
-    newSquare.className = "pixel";
     newSquare.style.flex = `0 0 ${flexBasis}%`;
-
+    newSquare.classList.add("pixel");
+    if (displayGrid) newSquare.classList.add("show-grid");
     drawScreen.appendChild(newSquare);
   }
 
@@ -67,8 +70,16 @@ const redrawScreen = (squaresPerSide) => {
     pixel.addEventListener("mousedown", () => {
       applyTool(pixel);
     });
+  });
+};
 
-    pixel.style.backgroundColor = "rgb(255, 255, 255)";
+const bindToolButton = (button, mode) => {
+  button.addEventListener("click", (event) => {
+    setToolMode(mode);
+    document.querySelectorAll(".tool-button").forEach((btn) => {
+      btn.classList.remove("active");
+    });
+    event.currentTarget.classList.add("active");
   });
 };
 
@@ -85,6 +96,7 @@ const setToolMode = (mode) => {
   }
 };
 
+// COLOR UTILITIES
 const convertRgbToHsl = ({ r, g, b }) => {
   // normalize RGB values
   const rFloat = r / 255;
@@ -125,7 +137,7 @@ const convertRgbToHsl = ({ r, g, b }) => {
   saturation *= 100;
   lightness *= 100;
 
-  return { h: hue, s: saturation, l: lightness};
+  return { h: hue, s: saturation, l: lightness };
 };
 
 const convertHslToRgb = ({ h, s, l }) => {
@@ -190,19 +202,28 @@ const shadePixel = (pixel, delta) => {
   const currRgbString = getComputedStyle(pixel).backgroundColor;
   const currRgb = parseColorString(currRgbString);
   const currHsl = convertRgbToHsl(currRgb);
-  const newHsl = { h: currHsl.h, s: currHsl.s, l: clamp(currHsl.l + delta, 0, 100) };
+  const newHsl = {
+    h: currHsl.h,
+    s: currHsl.s,
+    l: clamp(currHsl.l + delta, 0, 100),
+  };
   const newRgb = convertHslToRgb(newHsl);
   const newRgbString = formatColorString(newRgb);
   pixel.style.backgroundColor = newRgbString;
-}
+};
 
 const clamp = (value, min, max) => {
   return Math.max(min, Math.min(max, value));
-}
+};
 
 // EVENT BINDINGS
 document.addEventListener("mousedown", () => (isMouseDown = true));
 document.addEventListener("mouseup", () => (isMouseDown = false));
+
+bindToolButton(drawButton, ToolMode.DRAW);
+bindToolButton(eraseButton, ToolMode.ERASE);
+bindToolButton(shadeButton, ToolMode.SHADE);
+bindToolButton(lightenButton, ToolMode.LIGHTEN);
 
 resizeButton.addEventListener("click", () => {
   user_input = prompt("How many squares per side (2 - 64)?");
@@ -210,10 +231,27 @@ resizeButton.addEventListener("click", () => {
   redrawScreen(user_input);
 });
 
-drawButton.addEventListener("click", () => setToolMode(ToolMode.DRAW));
-eraseButton.addEventListener("click", () => setToolMode(ToolMode.ERASE));
-shadeButton.addEventListener("click", () => setToolMode(ToolMode.SHADE));
-lightenButton.addEventListener("click", () => setToolMode(ToolMode.LIGHTEN));
+gridButton.addEventListener("click", () => {
+  if (displayGrid) {
+    document.querySelectorAll(".pixel").forEach((pixel) => {
+      pixel.classList.remove("show-grid");
+    });
+    gridButton.innerHTML = "Show Grid";
+    displayGrid = false;
+  } else {
+    document.querySelectorAll(".pixel").forEach((pixel) => {
+      pixel.classList.add("show-grid");
+    });
+    gridButton.innerHTML = "Hide Grid";
+    displayGrid = true;
+  }
+});
 
 // INITIALIZATION
-redrawScreen(16);
+const startup = () => {
+  setToolMode(ToolMode.DRAW);
+  drawButton.classList.add("active");
+  redrawScreen(16);
+};
+
+startup();
