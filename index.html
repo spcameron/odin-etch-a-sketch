@@ -2,41 +2,40 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Etch-a-Sketch</title>
+    <title>Pixel Picasso</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
     <link href="./styles.css" rel="stylesheet" />
     <script src="./scripts.js" defer></script>
   </head>
   <body>
-    <header></header>
-    <main class="main">
+    <header class="header">
+      <div>
+        <h1>Pixel Picasso</h1>
+      </div>
+    </header>
+    <main class="content">
       <div class="container-wrapper">
         <div class="container">
           <div class="buttons-container">
             <button id="resizeButton" class="button">Reset the Grid!</button>
-            <button id="drawButton" class="button tool-button">
-              Draw Mode
-            </button>
-            <button id="eraseButton" class="button tool-button">
-              Erase Mode
-            </button>
-            <button id="shadeButton" class="button tool-button">
-              Shade Mode
-            </button>
-            <button id="lightenButton" class="button tool-button">
-              Lighten Mode
-            </button>
+            <button id="drawButton" class="button tool-button">Draw Mode</button>
+            <button id="eraseButton" class="button tool-button">Erase Mode</button>
+            <button id="shadeButton" class="button tool-button">Shade Mode</button>
+            <button id="lightenButton" class="button tool-button">Lighten Mode</button>
             <button id="toggleGrid" class="button">Show Grid</button>
           </div>
           <div id="drawScreen" class="drawScreen"></div>
         </div>
       </div>
     </main>
-    <footer></footer>
+    <footer class="footer">
+      <div class="copyright">
+        copyright &copy;
+        <a href="https://github.com/spcameron/odin-etch-a-sketch">spcameron</a>
+        2025
+      </div>
+    </footer>
   </body>
 </html>
