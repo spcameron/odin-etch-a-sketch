@@ -20,12 +20,12 @@ const eraseButton = document.querySelector("#eraseButton");
 const shadeButton = document.querySelector("#shadeButton");
 const lightenButton = document.querySelector("#lightenButton");
 const gridButton = document.querySelector("#toggleGrid");
+const pixelInput = document.querySelector("#pixelSize");
 
 // TOOL HANDLERS
 const ToolHandlers = {
   [ToolMode.DRAW]: (pixel) => (pixel.style.backgroundColor = currentColor),
-  [ToolMode.ERASE]: (pixel) =>
-    (pixel.style.backgroundColor = "rgb(255, 255, 255)"),
+  [ToolMode.ERASE]: (pixel) => (pixel.style.backgroundColor = "rgb(255, 255, 255)"),
   [ToolMode.SHADE]: (pixel) => shadePixel(pixel, -10),
   [ToolMode.LIGHTEN]: (pixel) => shadePixel(pixel, 10),
 };
@@ -45,11 +45,9 @@ const clearScreen = () => {
 const redrawScreen = (squaresPerSide) => {
   drawScreen.replaceChildren();
 
-  if (squaresPerSide > 64) {
-    squaresPerSide = 64;
-  } else if (squaresPerSide == null || squaresPerSide < 2) {
-    squaresPerSide = 16;
-  }
+  squaresPerSide = clamp(squaresPerSide, 2, 64);
+
+  pixelInput.value = squaresPerSide;
 
   const totalSquares = squaresPerSide * squaresPerSide;
   const flexBasis = 100 / squaresPerSide;
@@ -226,9 +224,9 @@ bindToolButton(shadeButton, ToolMode.SHADE);
 bindToolButton(lightenButton, ToolMode.LIGHTEN);
 
 resizeButton.addEventListener("click", () => {
-  user_input = prompt("How many squares per side (2 - 64)?");
+  const userInput = parseInt(pixelInput.value, 10) || 16;
   clearScreen();
-  redrawScreen(user_input);
+  redrawScreen(userInput);
 });
 
 gridButton.addEventListener("click", () => {
@@ -244,6 +242,12 @@ gridButton.addEventListener("click", () => {
     });
     gridButton.innerHTML = "Hide Grid";
     displayGrid = true;
+  }
+});
+
+pixelInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    resizeButton.click();
   }
 });
 
