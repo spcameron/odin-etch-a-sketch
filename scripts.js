@@ -9,7 +9,7 @@ const ToolMode = Object.freeze({
 // STATE
 let isMouseDown = false;
 let currentTool = ToolMode.DRAW;
-let currentColor = "rgb(127, 127, 127)";
+let currentColor = "#7f7f7f";
 let displayGrid = false;
 
 // DOM ELEMENT REFERENCES
@@ -20,7 +20,8 @@ const eraseButton = document.querySelector("#eraseButton");
 const shadeButton = document.querySelector("#shadeButton");
 const lightenButton = document.querySelector("#lightenButton");
 const gridButton = document.querySelector("#toggleGrid");
-const pixelInput = document.querySelector("#pixelSize");
+const changeDimensions = document.querySelector("#pixelSize");
+const changeColor = document.querySelector("#changeColor");
 
 // TOOL HANDLERS
 const ToolHandlers = {
@@ -47,7 +48,7 @@ const redrawScreen = (squaresPerSide) => {
 
   squaresPerSide = clamp(squaresPerSide, 2, 64);
 
-  pixelInput.value = squaresPerSide;
+  changeDimensions.value = squaresPerSide;
 
   const totalSquares = squaresPerSide * squaresPerSide;
   const flexBasis = 100 / squaresPerSide;
@@ -224,7 +225,7 @@ bindToolButton(shadeButton, ToolMode.SHADE);
 bindToolButton(lightenButton, ToolMode.LIGHTEN);
 
 resizeButton.addEventListener("click", () => {
-  const userInput = parseInt(pixelInput.value, 10) || 16;
+  const userInput = parseInt(changeDimensions.value, 10) || 16;
   clearScreen();
   redrawScreen(userInput);
 });
@@ -245,14 +246,19 @@ gridButton.addEventListener("click", () => {
   }
 });
 
-pixelInput.addEventListener("keydown", (event) => {
+changeDimensions.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     resizeButton.click();
   }
 });
 
+changeColor.addEventListener("change", (event) => {
+  currentColor = changeColor.value;
+})
+
 // INITIALIZATION
 const startup = () => {
+  changeColor.value = currentColor;
   setToolMode(ToolMode.DRAW);
   drawButton.classList.add("active");
   redrawScreen(16);

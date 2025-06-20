@@ -109,7 +109,8 @@ button:active {
   gap: 20px;
 }
 
-.input-container {
+.input-container,
+.color-container {
   border: none;
   border-radius: 10px;
   padding: 10px;
@@ -127,10 +128,7 @@ button:active {
   gap: 5px;
 }
 
-label {
-}
-
-input {
+.input-container input {
   font-family: "Audiowide", sans-serif;
   font-weight: 400;
   font-style: normal;
